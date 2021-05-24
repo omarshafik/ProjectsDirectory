@@ -1,5 +1,4 @@
 #include "directory.h"
-#include "ui_directory.h"
 
 Directory::Directory(QWidget *parent)
     : QMainWindow(parent)
