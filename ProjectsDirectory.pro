@@ -12,7 +12,7 @@ SOURCES += \
     ./Repository/ProjectsRepository.cpp \
     ./Model/project.cpp \
     main.cpp \
-    directory.cpp \
+    ./View/directory.cpp \
 
 HEADERS += \
     ProjectsRepository.h \
@@ -20,10 +20,10 @@ HEADERS += \
     ./Repository/db_constants.h \
     ./Model/project.h \
     db_constants.h \
-    directory.h \
+    ./View/directory.h \
 
 FORMS += \
-    directory.ui
+    ./View/directory.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

@@ -12,12 +12,8 @@
 class ProjectsRepository : QObject
 {
     Q_OBJECT
-private:
-    bool isOpen;
 public:
     ProjectsRepository();
-
-    bool getIsOpen();
 
     std::vector<Project> getProjects();
     Project addProject(Project &projectToAdd);

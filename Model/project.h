@@ -15,6 +15,8 @@ public:
     Project() : id(0), name(""), registration_date(""), start_date("") {};
     Project(int id, std::string name, std::string registration_date, std::string start_date)
         : id(id), name(name), registration_date(registration_date), start_date(start_date) {};
+    Project(std::string name, std::string registration_date, std::string start_date)
+        : name(name), registration_date(registration_date), start_date(start_date) {};
 
     void set_id(int id);
     int get_id();
