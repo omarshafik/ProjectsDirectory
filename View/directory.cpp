@@ -9,86 +9,85 @@ Directory::Directory(QWidget *parent)
     // render the view with projects
 }
 
+void Directory::retrieveAndRenderProjects() {
+    projects = repo.getProjects();
+    Project newProject;
+    addProjectToLayout(newProject);
+    for(Project project: projects) {
+        addProjectToLayout(project);
+    }
+}
+
 void Directory::setupUI() {
     if (this->objectName().isEmpty())
         this->setObjectName(QString::fromUtf8("Directory"));
     this->resize(800, 600);
     this->setMinimumSize(QSize(160, 160));
 
-    QSizePolicy sizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-    sizePolicy.setHorizontalStretch(0);
-    sizePolicy.setVerticalStretch(0);
+    centralWidget = new QWidget(this);
+    centralWidget->setObjectName(QString::fromUtf8("centralwidget"));
+    mainLayout = new QVBoxLayout(centralWidget);
+    mainLayout->setAlignment(Qt::AlignLeft|Qt::AlignTop);
+    mainLayout->setSpacing(12);
+    mainLayout->setObjectName(QString::fromUtf8("gridLayout"));
+    mainLayout->setContentsMargins(80, 80, 80, 80);
+    setCentralWidget(centralWidget);
 
-    centralwidget = new QWidget(this);
-    centralwidget->setObjectName(QString::fromUtf8("centralwidget"));
-    mainGrid = new QGridLayout(centralwidget);
-    mainGrid->setObjectName(QString::fromUtf8("mainGrid"));
-    mainGrid->setAlignment(Qt::AlignLeft|Qt::AlignTop);
-    mainGrid->setSpacing(6);
-    mainGrid->setObjectName(QString::fromUtf8("gridLayout"));
-    mainGrid->setSizeConstraint(QLayout::SetMinAndMaxSize);
-    mainGrid->setContentsMargins(80, 80, 80, 80);
-
-    addProjectButton = new QPushButton(centralwidget);
-    addProjectButton->setObjectName(QString::fromUtf8("addProjectButton"));
-    sizePolicy.setHeightForWidth(addProjectButton->sizePolicy().hasHeightForWidth());
-    addProjectButton->setSizePolicy(sizePolicy);
-    addProjectButton->setMinimumSize(QSize(160, 160));
-    addProjectButton->setMaximumSize(QSize(160, 160));
-    addProjectButton->setText(QString::fromUtf8("Add Project"));
-
-    mainGrid->addWidget(addProjectButton);
-
-    std::vector projects_vector = repo.getProjects();
-
-    for(Project project: projects_vector) {
-        addProjectToLayout(project);
-    }
+    retrieveAndRenderProjects();
 }
 
 void Directory::addProjectToLayout(Project &projectToAdd) {
-    QWidget *widget = new QWidget(centralwidget);
-    QString projectWidgetIdentifier = QString::fromUtf8(projectToAdd.get_name() + "_" + std::to_string(projectToAdd.get_id()));
-    widget->setObjectName(projectWidgetIdentifier + "_widget");
-    QSizePolicy sizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-    sizePolicy.setHorizontalStretch(0);
-    sizePolicy.setVerticalStretch(0);
-    sizePolicy.setHeightForWidth(widget->sizePolicy().hasHeightForWidth());
-    widget->setSizePolicy(sizePolicy);
-    widget->setMinimumSize(QSize(160, 160));
-    widget->setMaximumSize(QSize(160, 160));
-    widget->setBaseSize(QSize(160, 160));
-    QGridLayout *widgetGrid = new QGridLayout(widget);
+    bool isNew = projectToAdd.get_id() == 0;
+    QString projectWidgetIdentifier = isNew ?
+                QString::fromUtf8(projectToAdd.get_name() + "_" + std::to_string(projectToAdd.get_id()))
+              : "new_project";
+    QGridLayout *widgetGrid = new QGridLayout;
     widgetGrid->setObjectName(projectWidgetIdentifier + "_grid");
-    QLabel *nameLabel = new QLabel(widget);
+
+    QLabel *nameLabel = new QLabel;
     nameLabel->setObjectName(projectWidgetIdentifier + "_name_label");
-    nameLabel->setText(QString::fromUtf8(projectToAdd.get_name()));
+    nameLabel->setText(QString::fromUtf8("Name"));
 
-    widgetGrid->addWidget(nameLabel, 0, 0, 1, 2);
+    widgetGrid->addWidget(nameLabel, 0, 0, 1, 1);
 
-    QLabel *regDateLabel = new QLabel(widget);
+    QLineEdit *nameInput = new QLineEdit;
+    nameInput->setObjectName(projectWidgetIdentifier + "_name_input");
+    nameInput->setText(QString::fromUtf8(projectToAdd.get_name()));
+
+    widgetGrid->addWidget(nameInput, 0, 1, 1, 1);
+
+    QLabel *regDateLabel = new QLabel;
     regDateLabel->setObjectName(projectWidgetIdentifier + "_reg_date_label");
     regDateLabel->setText(QString::fromUtf8("Registration Date"));
 
     widgetGrid->addWidget(regDateLabel, 1, 0, 1, 1);
 
-    QLineEdit *regDateInput = new QLineEdit(widget);
+    QLineEdit *regDateInput = new QLineEdit;
     regDateInput->setObjectName(projectWidgetIdentifier + "_reg_date_input");
     regDateInput->setText(QString::fromUtf8(projectToAdd.get_registration_date()));
 
     widgetGrid->addWidget(regDateInput, 1, 1, 1, 1);
 
-    QLabel *startDateLabel = new QLabel(widget);
+    QLabel *startDateLabel = new QLabel;
     startDateLabel->setObjectName(projectWidgetIdentifier + "_start_date_label");
     startDateLabel->setText(QString::fromUtf8("Start Date"));
 
     widgetGrid->addWidget(startDateLabel, 2, 0, 1, 1);
 
-    QLineEdit *startDateInput = new QLineEdit(widget);
+    QLineEdit *startDateInput = new QLineEdit;
     startDateInput->setObjectName(projectWidgetIdentifier + "_start_date_input");
     startDateInput->setText(QString::fromUtf8(projectToAdd.get_start_date()));
 
     widgetGrid->addWidget(startDateInput, 2, 1, 1, 1);
 
-    mainGrid->addWidget(widget);
+    if (isNew) {
+        addProjectButton = new QPushButton;
+        addProjectButton->setObjectName(QString::fromUtf8("addProjectButton"));
+        addProjectButton->setText(QString::fromUtf8("Add Project"));
+
+        widgetGrid->addWidget(addProjectButton, 3, 0, 1, 2);
+    }
+    QWidget *widget = new QWidget;
+    widget->setLayout(widgetGrid);
+    mainLayout->addWidget(widget);
 }

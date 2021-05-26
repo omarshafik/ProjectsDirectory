@@ -5,6 +5,7 @@
 #include <QtCore/QVariant>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QGridLayout>
+#include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QLineEdit>
 #include <QtWidgets/QMainWindow>
@@ -25,12 +26,14 @@ public:
     Directory(QWidget *parent = nullptr);
 
 private:
-    QWidget *centralwidget;
-    QGridLayout *mainGrid;
+    QWidget *centralWidget;
+    QVBoxLayout *mainLayout;
     QPushButton *addProjectButton;
     ProjectsRepository repo;
+    std::vector<Project> projects;
 
     void addProjectToLayout(Project &projectToAdd);
     void setupUI();
+    void retrieveAndRenderProjects();
 };
 #endif // DIRECTORY_H
