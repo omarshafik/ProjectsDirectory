@@ -3,17 +3,7 @@
 
 #include <QMainWindow>
 #include <QtCore/QVariant>
-#include <QtWidgets/QApplication>
-#include <QtWidgets/QGridLayout>
-#include <QtWidgets/QVBoxLayout>
-#include <QtWidgets/QLabel>
-#include <QtWidgets/QLineEdit>
-#include <QtWidgets/QMainWindow>
-#include <QtWidgets/QMenuBar>
-#include <QtWidgets/QPushButton>
-#include <QtWidgets/QStatusBar>
-#include <QtWidgets/QWidget>
-#include <QtWidgets/QLayoutItem>
+#include <QtWidgets>
 
 #include "../Model/project.h"
 #include "../Repository/ProjectsRepository.h"
@@ -27,7 +17,10 @@ public:
 
 private:
     QWidget *centralWidget;
+    QVBoxLayout *outerLayout;
     QVBoxLayout *mainLayout;
+    QScrollArea *mainScrollArea;
+    QWidget *mainScrollAreaContentWidget;
     QPushButton *addProjectButton;
     ProjectsRepository repo;
     std::vector<Project> projects;

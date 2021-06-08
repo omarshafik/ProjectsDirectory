@@ -35,13 +35,9 @@ Project ProjectsRepository::addProject(Project &projectToAdd) {
     query.bindValue(":registration_date", QString::fromStdString(projectToAdd.Project::get_registration_date()));
     query.bindValue(":start_date", QString::fromStdString(projectToAdd.Project::get_start_date()));
     query.exec();
-    db.commit();
     if (query.next()) {
-        return Project(
-                    query.value(0).toInt(),
-                    query.value(1).toString().toStdString(),
-                    query.value(2).toString().toStdString(),
-                    query.value(3).toString().toStdString());
+        projectToAdd.set_id(query.lastInsertId().toInt());
+        return projectToAdd;
     }
     return Project();
 }
@@ -58,11 +54,7 @@ Project ProjectsRepository::updateProject(Project &projectToUpdate) {
     query.exec();
     db.commit();
     if (query.next()) {
-        return Project(
-                    query.value(0).toInt(),
-                    query.value(1).toString().toStdString(),
-                    query.value(2).toString().toStdString(),
-                    query.value(3).toString().toStdString());
+        return projectToUpdate;
     }
     return Project();
 }

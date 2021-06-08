@@ -4,9 +4,6 @@ Directory::Directory(QWidget *parent)
     : QMainWindow(parent)
 {
     this->setupUI();
-    // retrieve projects on show/open event
-
-    // render the view with projects
 }
 
 void Directory::retrieveAndRenderProjects() {
@@ -26,11 +23,19 @@ void Directory::setupUI() {
 
     centralWidget = new QWidget(this);
     centralWidget->setObjectName(QString::fromUtf8("centralwidget"));
-    mainLayout = new QVBoxLayout(centralWidget);
+    outerLayout = new QVBoxLayout(centralWidget);
+    mainScrollArea = new QScrollArea(centralWidget);
+    mainScrollArea->setWidgetResizable(true);
+    mainScrollAreaContentWidget = new QWidget();
+    mainScrollAreaContentWidget->setGeometry(QRect(0, 0, 780, 536));
+    mainLayout = new QVBoxLayout(mainScrollAreaContentWidget);
     mainLayout->setAlignment(Qt::AlignLeft|Qt::AlignTop);
     mainLayout->setSpacing(12);
     mainLayout->setObjectName(QString::fromUtf8("gridLayout"));
     mainLayout->setContentsMargins(80, 80, 80, 80);
+    mainScrollArea->setWidget(mainScrollAreaContentWidget);
+
+    outerLayout->addWidget(mainScrollArea);
     setCentralWidget(centralWidget);
 
     retrieveAndRenderProjects();
@@ -86,8 +91,40 @@ void Directory::addProjectToLayout(Project &projectToAdd) {
         addProjectButton->setText(QString::fromUtf8("Add Project"));
 
         widgetGrid->addWidget(addProjectButton, 3, 0, 1, 2);
+        connect(addProjectButton, &QPushButton::clicked,
+                this, [this, nameInput, regDateInput, startDateInput](bool) {
+            Project newProjectToAdd;
+            newProjectToAdd.set_name(nameInput->text().toStdString());
+            newProjectToAdd.set_registration_date(regDateInput->text().toStdString());
+            newProjectToAdd.set_start_date(startDateInput->text().toStdString());
+            Project addedProject = repo.addProject(newProjectToAdd);
+            nameInput->setText("");
+            regDateInput->setText("");
+            startDateInput->setText("");
+            addProjectToLayout(addedProject);
+        });
     }
     QWidget *widget = new QWidget;
     widget->setLayout(widgetGrid);
     mainLayout->addWidget(widget);
+    if (!isNew) {
+        connect(nameInput, &QLineEdit::textEdited,
+                this, [projectToAdd, this](const QString &text) {
+            Project projectToEdit {projectToAdd};
+            projectToEdit.set_name(text.toStdString());
+            repo.updateProject(projectToEdit);
+        });
+        connect(regDateInput, &QLineEdit::textEdited,
+                this, [projectToAdd, this](const QString &text) {
+            Project projectToEdit {projectToAdd};
+            projectToEdit.set_registration_date(text.toStdString());
+            repo.updateProject(projectToEdit);
+        });
+        connect(startDateInput, &QLineEdit::textEdited,
+                this, [projectToAdd, this](const QString &text) {
+            Project projectToEdit {projectToAdd};
+            projectToEdit.set_start_date(text.toStdString());
+            repo.updateProject(projectToEdit);
+        });
+    }
 }
